@@ -142,6 +142,7 @@ class _UpdateClassActivityScreenState extends State<UpdateClassActivityScreen> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(color: Colors.black),

@@ -142,6 +142,7 @@ class _UpdateClassSubjectScreenState extends State<UpdateClassSubjectScreen> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(color: Colors.black),

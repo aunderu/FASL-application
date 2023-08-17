@@ -128,6 +128,7 @@ class _CreateClassActivityState extends State<CreateClassActivity> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'กิจกรรม',
       theme: ThemeData(
         primarySwatch: Colors.blue,

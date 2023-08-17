@@ -99,6 +99,7 @@ class _RegisterV2State extends State<RegisterV2> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Create Data Example',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

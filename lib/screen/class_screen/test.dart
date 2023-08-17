@@ -63,10 +63,12 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: GestureDetector(
         onTap: () {
           SelectBoxOverlay.removeAll();
         },
+        
         child: Scaffold(
           appBar: AppBar(
             title: Text('Select Box'),

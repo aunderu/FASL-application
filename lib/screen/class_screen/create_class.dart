@@ -121,6 +121,7 @@ class _CreateClassState extends State<CreateClass> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Create Data Example',
       theme: ThemeData(
         primarySwatch: Colors.blue,

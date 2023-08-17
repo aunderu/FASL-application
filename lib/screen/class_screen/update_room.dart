@@ -136,6 +136,7 @@ class _UpdateRoomScreenState extends State<UpdateRoomScreen> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           iconTheme: const IconThemeData(color: Colors.black),

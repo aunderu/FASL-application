@@ -122,6 +122,7 @@ class _CreateSubjectActivityState extends State<CreateSubjectActivity> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Create Data Example',
       theme: ThemeData(
         primarySwatch: Colors.blue,
