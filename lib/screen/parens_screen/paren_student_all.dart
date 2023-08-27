@@ -345,7 +345,7 @@ class _ParenStudentAllScreenState extends State<ParenStudentAllScreen> {
                 sharedPreferences.clear();
 
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return LoginV2();
+                  return LoginPage();
                 }));
               },
             ),

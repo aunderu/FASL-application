@@ -320,7 +320,7 @@ class _ParenAddStudentScreenState extends State<ParenAddStudentScreen> {
                 sharedPreferences.clear();
 
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return LoginV2();
+                  return LoginPage();
                 }));
               },
             ),

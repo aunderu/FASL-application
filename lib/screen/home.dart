@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) {
                     // return RegisterScreen();
-                    return RegisterV2();
+                    return RegisterPage();
                   }));
                 },
               ),
@@ -43,7 +43,7 @@ class HomeScreen extends StatelessWidget {
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) {
                     // return LoginScreen();
-                    return LoginV2();
+                    return LoginPage();
                   }));
                 },
               ),

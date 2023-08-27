@@ -1,41 +1,58 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:convert';
-import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:myappv2/registerv2.dart';
-import 'package:myappv2/screen/class_screen/classpage.dart';
-import 'package:myappv2/screen/parens_screen/paren_home.dart';
-import 'package:myappv2/screen/students_screen/student_home.dart';
-import 'package:myappv2/screen/welcome.dart';
-import 'package:myappv2/screen/welcomev2.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+// import 'package:myappv2/registerv2.dart';
+// import 'package:myappv2/screen/class_screen/classpage.dart';
+// import 'package:myappv2/screen/parens_screen/paren_home.dart';
+// import 'package:myappv2/screen/students_screen/student_home.dart';
+// import 'package:myappv2/screen/welcome.dart';
+// import 'package:myappv2/screen/welcomev2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginV2 extends StatefulWidget {
-  const LoginV2({Key? key}) : super(key: key);
+import 'registerv2.dart';
+import 'screen/class_screen/classpage.dart';
+import 'screen/parens_screen/paren_home.dart';
+import 'screen/students_screen/student_home.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  _LoginV2State createState() => _LoginV2State();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginV2State extends State<LoginV2> {
+class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  var isPassNotVisible = true;
+  final _formKey = GlobalKey<FormState>();
 
-  void login(String email, password) async {
+  Future<bool> loginEmail(String email, String password) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
     try {
-      Response response = await post(
-          Uri.parse('https://fasl.chabafarm.com/api/login'),
-          body: {'email': email, 'password': password});
+      var response = await http.post(
+        Uri.parse('https://fasl.chabafarm.com/api/login'),
+        body: {
+          'email': email,
+          'password': password,
+        },
+      );
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body.toString());
 
-        SharedPreferences pref = await SharedPreferences.getInstance();
-        SharedPreferences pref1 = await SharedPreferences.getInstance();
-        SharedPreferences pref2 = await SharedPreferences.getInstance();
+        SharedPreferences prefId = await SharedPreferences.getInstance();
+        SharedPreferences prefFname = await SharedPreferences.getInstance();
+        SharedPreferences prefLname = await SharedPreferences.getInstance();
         // SharedPreferences pref3 = await SharedPreferences.getInstance();
         // SharedPreferences pref4 = await SharedPreferences.getInstance();
         // pageRoute(data['id']!);
@@ -47,29 +64,43 @@ class _LoginV2State extends State<LoginV2> {
         // data['']
         // print(data);
         // if (data != null) {
-        await pref.setInt("id", data['id']);
-        await pref1.setString("fname", data['fname']);
-        await pref2.setString("lname", data['lname']);
+        await prefId.setInt("id", data['id']);
+        await prefFname.setString("fname", data['fname']);
+        await prefLname.setString("lname", data['lname']);
         // await pref3.setString("user_type", data['type']);
         // await pref4.setString("email", data['email']);
 
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          if (data['type']! == 'te') {
-            return ClassHomePageScreen();
-          } else if (data['type']! == 'st') {
-            return StudentHomeScreen();
-          } else {
-            return ParenHomeScreen();
-          }
-        }));
+        if (data['type']! == 'te') {
+          Get.off(() => ClassHomePageScreen());
+        } else if (data['type']! == 'st') {
+          Get.off(() => StudentHomeScreen());
+        } else {
+          Get.off(() => ParenHomeScreen());
+        }
         // }
 
-        print('Login successfully');
+        // Get.back();
+
+        return true;
       } else {
-        print('failed');
+        Get.back();
+
+        Get.snackbar(
+          'โอ้ะ..',
+          'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return false;
       }
     } catch (e) {
-      print(e.toString());
+      Get.back();
+
+      Get.snackbar(
+        'โอ้ะ.. ดูเหมือนว่าจะเกิดปัญหา.',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return false;
     }
   }
 
@@ -89,61 +120,122 @@ class _LoginV2State extends State<LoginV2> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Sign Up Api'),
-      // ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "เข้าสู่ระบบ",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            ),
-            TextFormField(
-              controller: emailController,
-              decoration: const InputDecoration(hintText: 'Email'),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            TextFormField(
-              controller: passwordController,
-              decoration: const InputDecoration(hintText: 'Password'),
-            ),
-            const SizedBox(
-              height: 40,
-            ),
-            GestureDetector(
-              onTap: () {
-                login(emailController.text.toString(),
-                    passwordController.text.toString());
-              },
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 170, 147, 214),
-                    borderRadius: BorderRadius.circular(10)),
-                child: const Center(
-                  child: Text('เข้าสู่ระบบ',
-                      style: TextStyle(fontSize: 18, color: Colors.white)),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        // appBar: AppBar(
+        //   title: const Text('Sign Up Api'),
+        // ),
+        body: Form(
+          key: _formKey,
+          child: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/icons/logo_msa_no_bg.png'),
+                    const SizedBox(height: 50),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        "เข้าสู่ระบบ",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.indigo[500],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: emailController,
+                      decoration: const InputDecoration(
+                        hintText: 'youremail@mail.com',
+                        labelText: 'Email',
+                        icon: Icon(Icons.email_rounded),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) =>
+                          value!.isEmpty || !value.contains("@")
+                              ? "กรุณากรอกอีเมล"
+                              : null,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextFormField(
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        icon: const Icon(Icons.password_rounded),
+                        suffixIcon: Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: IconButton(
+                            icon: isPassNotVisible
+                                ? Icon(Icons.visibility_off_outlined,
+                                    color: Colors.grey[500])
+                                : const Icon(Icons.visibility),
+                            onPressed: () {
+                              setState(() {
+                                isPassNotVisible = !isPassNotVisible;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      obscureText: isPassNotVisible,
+                      keyboardType: TextInputType.visiblePassword,
+                      onSaved: (String? value) {},
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'กรุณากรอกรหัสผ่านของคุณ';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        if (_formKey.currentState!.validate()) {
+                          loginEmail(
+                            emailController.text,
+                            passwordController.text,
+                          );
+
+                          // loginEmail(emailController.text, passwordController.text);
+                        }
+                      },
+                      child: Ink(
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 170, 147, 214),
+                            borderRadius: BorderRadius.circular(10)),
+                        child: const Center(
+                          child: Text('เข้าสู่ระบบ',
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.white)),
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Get.to(
+                          () => const RegisterPage(),
+                          transition: Transition.rightToLeft,
+                        );
+                      },
+                      child: const Text("สมัครสมาชิก"),
+                    ),
+                  ],
                 ),
               ),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) {
-                  // return RegisterScreen();
-                  return RegisterV2();
-                }));
-              },
-              child: Text("สมัครสมาชิก"),
-            ),
-          ],
+          ),
         ),
       ),
     );

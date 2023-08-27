@@ -318,7 +318,7 @@ class _ParenWorkv2ScreenState extends State<ParenWorkv2Screen> {
                 sharedPreferences.clear();
 
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return LoginV2();
+                  return LoginPage();
                 }));
               },
             ),

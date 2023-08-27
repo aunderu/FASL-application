@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:myappv2/loginv2.dart';
+
+import 'loginv2.dart';
 // import 'package:myappv2/screen/class_screen/create_class.dart';
 // import 'package:myappv2/screen/class_screen/create_subjext.dart';
 // import 'package:myappv2/screen/class_screen/homepagev1.dart';
@@ -11,37 +13,6 @@ import 'package:myappv2/loginv2.dart';
 
 const List<String> list1 = <String>['นาย', 'นาง', 'นางสาว'];
 const List<String> list2 = <String>['ครู', 'นักเรียน', 'ผู้ปกครอง'];
-
-Future<Album> createAlbum(String title, String fname, String lname,
-    String email, String user_type, String password) async {
-  var response = await http.post(
-    Uri.parse('https://fasl.chabafarm.com/api/register/store'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'title': title,
-      'fname': fname,
-      'lname': lname,
-      'email': email,
-      'user_type': user_type,
-      'password': password,
-    }),
-  );
-
-  print(response.statusCode);
-  if (response.statusCode == 200) {
-    // If the server did return a 201 CREATED response,
-    // then parse the JSON.
-    // var data = jsonDecode(response.body.toString());
-    // print(data);
-    return Album.fromJson(jsonDecode(response.body));
-  } else {
-    // If the server did not return a 201 CREATED response,
-    // then throw an exception.
-    throw Exception('Failed to create album.');
-  }
-}
 
 class Album {
   final String? title;
@@ -71,46 +42,95 @@ class Album {
   }
 }
 
-void main() {
-  runApp(const RegisterV2());
-}
-
-enum SingingCharacter { lafayette, jefferson }
-
-class RegisterV2 extends StatefulWidget {
-  const RegisterV2({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<RegisterV2> createState() {
-    return _RegisterV2State();
+  State<RegisterPage> createState() {
+    return _RegisterPageState();
   }
 }
 
-class _RegisterV2State extends State<RegisterV2> {
-  String _title = list1.first;
-  String _user_type = list2.first;
+class _RegisterPageState extends State<RegisterPage> {
+  String? _title;
+  String? _userType;
   final TextEditingController _fname = TextEditingController();
   final TextEditingController _lname = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  Future<Album>? _futureAlbum;
+  final TextEditingController _confirmPassword = TextEditingController();
+  var isPassNotVisible = true;
+  final _formKey = GlobalKey<FormState>();
+
+  Future<bool> createAlbum(
+    String title,
+    String fname,
+    String lname,
+    String email,
+    String userType,
+    String password,
+  ) async {
+    var response = await http.post(
+      Uri.parse('https://fasl.chabafarm.com/api/register/store'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'title': title,
+        'fname': fname,
+        'lname': lname,
+        'email': email,
+        'user_type': userType,
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      // If the server did return a 201 CREATED response,
+      // then parse the JSON.
+      // var data = jsonDecode(response.body.toString());
+      // print(data);
+      Get.back();
+      Get.snackbar(
+        'เยี่ยม!',
+        'คุณสมัครเรียบร้อยแล้ว กรอกอีเมลและรหัสผ่านเพื่อเข้าสู่ระบบ',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      // return Album.fromJson(jsonDecode(response.body));
+      return true;
+    } else {
+      // If the server did not return a 201 CREATED response,
+      // then throw an exception.
+      Get.back();
+      Get.snackbar(
+        'โอ๊ะ..',
+        'ดูเหมือนไม่สามารถสมัครไอดีของคุณได้ กรุณาสมัครอีกครั้งในภายหลัง',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      // throw Exception('Failed to create album.');
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Create Data Example',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        // appBar: AppBar(
-        //   title: const Text('สมัครสมาชิก'),
-        // ),
-        body: Container(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          iconTheme: const IconThemeData(color: Colors.black),
+        ),
+        body: Align(
           alignment: Alignment.center,
-          padding: const EdgeInsets.all(20.0),
-          child: (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              child: Form(key: _formKey, child: buildColumn()),
+              // (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
+            ),
+          ),
         ),
       ),
     );
@@ -121,45 +141,25 @@ class _RegisterV2State extends State<RegisterV2> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text("ลงทะเบียน",
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-        DropdownButtonFormField<String>(
-          value: _title,
-          icon: const Icon(Icons.arrow_downward),
-          elevation: 16,
-          style: const TextStyle(color: Colors.deepPurple),
-          onChanged: (String? value) {
-            // This is called when the user selects an item.
-            setState(() {
-              _title = value!;
-            });
-          },
-          items: list1.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-        ),
-        TextField(
-          controller: _fname,
-          decoration: const InputDecoration(hintText: 'ชื่อ'),
-        ),
-        TextField(
-          controller: _lname,
-          decoration: const InputDecoration(hintText: 'นามสกุล'),
+        Align(
+          alignment: Alignment.topLeft,
+          child: Text(
+            "ลงทะเบียน",
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: Colors.indigo[500],
+            ),
+          ),
         ),
         DropdownButtonFormField<String>(
-          value: _user_type,
-          icon: const Icon(Icons.arrow_downward),
+          value: _userType,
+          icon: const Icon(Icons.arrow_drop_down),
           elevation: 16,
           style: const TextStyle(color: Colors.deepPurple),
-          onChanged: (String? value) {
-            // This is called when the user selects an item.
-            setState(() {
-              _user_type = value!;
-            });
-          },
+          hint: const Text('คุณตำแหน่งไหนในระบบนี้?'),
+          onChanged: (value) => setState(() => _userType = value!),
+          validator: (value) => value == null ? 'กรุณาเลือกตำแหน่ง' : null,
           items: list2.map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -167,39 +167,113 @@ class _RegisterV2State extends State<RegisterV2> {
             );
           }).toList(),
         ),
-        TextField(
+        DropdownButtonFormField<String>(
+          value: _title,
+          icon: const Icon(Icons.arrow_drop_down),
+          elevation: 16,
+          style: const TextStyle(color: Colors.deepPurple),
+          hint: const Text('คำนำหน้า'),
+          onChanged: (value) => setState(() => _title = value!),
+          validator: (value) => value == null ? 'กรุณาเลือกคำนำหน้า' : null,
+          items: list1.map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+        ),
+        TextFormField(
+          controller: _fname,
+          decoration: const InputDecoration(hintText: 'ชื่อ'),
+          keyboardType: TextInputType.name,
+          onSaved: (String? value) {},
+          validator: (value) => value!.isEmpty ? "กรุณากรอกชื่อของคุณ" : null,
+        ),
+        TextFormField(
+          controller: _lname,
+          decoration: const InputDecoration(hintText: 'นามสกุล'),
+          keyboardType: TextInputType.name,
+          onSaved: (String? value) {},
+          validator: (value) =>
+              value!.isEmpty ? "กรุณากรอกนามสกุลของคุณ" : null,
+        ),
+        const SizedBox(height: 20),
+        TextFormField(
           controller: _email,
           decoration: const InputDecoration(hintText: 'Email'),
+          keyboardType: TextInputType.emailAddress,
+          onSaved: (String? value) {},
+          validator: (value) =>
+              value!.isEmpty || !value.contains("@") ? "กรุณากรอกอีเมล" : null,
         ),
-        TextField(
+        TextFormField(
           controller: _password,
-          decoration: const InputDecoration(hintText: 'password'),
+          decoration: const InputDecoration(
+            hintText: 'Password',
+          ),
+          obscureText: isPassNotVisible,
+          keyboardType: TextInputType.visiblePassword,
+          onSaved: (String? value) {},
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'กรุณากรอกรหัสผ่านของคุณ';
+            }
+            return null;
+          },
+        ),
+        TextFormField(
+          controller: _confirmPassword,
+          decoration: const InputDecoration(
+            hintText: 'Confirm Password',
+          ),
+          obscureText: isPassNotVisible,
+          keyboardType: TextInputType.visiblePassword,
+          onSaved: (String? value) {},
+          validator: (val) {
+            if (val!.isEmpty) return 'กรุณากรอกรหัสผ่านของคุณ';
+            if (val != _password.text) return 'รหัสผ่านไม่ตรงกัน';
+            return null;
+          },
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 18, 0, 0),
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 170, 147, 214),
+            ),
             onPressed: () {
-              setState(
-                () {
-                  _futureAlbum = createAlbum(_title, _fname.text, _lname.text,
-                      _email.text, _user_type, _password.text);
-                },
-              );
+              if (_formKey.currentState!.validate()) {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
+                );
+                createAlbum(
+                  _title!,
+                  _fname.text,
+                  _lname.text,
+                  _email.text,
+                  _userType!,
+                  _password.text,
+                ).then((value) {
+                  if (value == true) {
+                    Get.off(() => const LoginPage());
+                  }
+                });
+              }
 
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginV2(),
-                  ));
+              // Get.off(() => const LoginPage());
             },
-            child: Container(
-              height: 50,
-              decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 170, 147, 214),
-                  borderRadius: BorderRadius.circular(10)),
-              child: const Center(
-                child: Text('ลงทะเบียน',
-                    style: TextStyle(fontSize: 18, color: Colors.white)),
+            child: const Center(
+              child: Text(
+                'ลงทะเบียน',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
               ),
             ),
             // child: const Text('ลงทะเบียน'),
@@ -207,31 +281,26 @@ class _RegisterV2State extends State<RegisterV2> {
         ),
         TextButton(
           onPressed: () {
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) {
-              // return RegisterScreen();
-              return LoginV2();
-            }));
+            Get.back();
           },
-          child: Text("เข้าสู่ระบบ"),
+          child: const Text("เข้าสู่ระบบ"),
         ),
       ],
     );
   }
 
-  FutureBuilder<Album> buildFutureBuilder() {
-    return FutureBuilder<Album>(
-      future: _futureAlbum,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          // return Text(snapshot.data!.class_name!);
+  // FutureBuilder<Album> buildFutureBuilder() {
+  //   return FutureBuilder<Album>(
+  //     future: _futureAlbum,
+  //     builder: (context, snapshot) {
+  //       if (snapshot.hasData) {
+  //         // return Text(snapshot.data!.class_name!);
+  //       } else if (snapshot.hasError) {
+  //         return Text('${snapshot.error}');
+  //       }
 
-        } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
-        }
-
-        return const CircularProgressIndicator();
-      },
-    );
-  }
+  //       return const CircularProgressIndicator();
+  //     },
+  //   );
+  // }
 }

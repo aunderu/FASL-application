@@ -135,11 +135,11 @@ class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
                   color: Colors.black,
                 ),
               ),
-              customItemsHeights: [
-                ...List<double>.filled(MenuItems.firstItems.length, 48),
-                8,
-                // ...List<double>.filled(MenuItems.secondItems.length, 48),
-              ],
+              // customItemsHeights: [
+              //   ...List<double>.filled(MenuItems.firstItems.length, 48),
+              //   8,
+              //   // ...List<double>.filled(MenuItems.secondItems.length, 48),
+              // ],
               items: [
                 ...MenuItems.firstItems.map(
                   (item) => DropdownMenuItem<MenuItem>(
