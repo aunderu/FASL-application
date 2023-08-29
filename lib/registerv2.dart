@@ -19,7 +19,7 @@ class Album {
   final String? fname;
   final String? lname;
   final String? email;
-  final String? user_type;
+  final String? userType;
   final String? password;
 
   const Album(
@@ -27,7 +27,7 @@ class Album {
       required this.fname,
       required this.lname,
       required this.email,
-      required this.user_type,
+      required this.userType,
       required this.password});
 
   factory Album.fromJson(Map<String, dynamic> json) {
@@ -36,7 +36,7 @@ class Album {
       fname: json['fname'],
       lname: json['lname'],
       email: json['email'],
-      user_type: json['user_type'],
+      userType: json['user_type'],
       password: json['password'],
     );
   }

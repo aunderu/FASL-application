@@ -1,9 +1,3 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-// ignore_for_file: public_member_api_docs
-
 import 'dart:async';
 import 'dart:io';
 
@@ -86,8 +80,12 @@ class _CameraGradeState extends State<CameraGrade> {
           source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
     } else if (isMultiImage) {
-      await _displayPickImageDialog(context!,
-          (double? maxWidth, double? maxHeight, int? quality) async {
+      if (!mounted) return;
+      await _displayPickImageDialog(context!, (
+        double? maxWidth,
+        double? maxHeight,
+        int? quality,
+      ) async {
         try {
           final List<XFile> pickedFileList = await _picker.pickMultiImage(
             maxWidth: maxWidth,
@@ -104,6 +102,7 @@ class _CameraGradeState extends State<CameraGrade> {
         }
       });
     } else {
+      if (!mounted) return;
       await _displayPickImageDialog(context!,
           (double? maxWidth, double? maxHeight, int? quality) async {
         try {
@@ -240,7 +239,7 @@ class _CameraGradeState extends State<CameraGrade> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("กล้อง"),
+        title: const Text("กล้อง"),
       ),
       body: Center(
         child: !kIsWeb && defaultTargetPlatform == TargetPlatform.android

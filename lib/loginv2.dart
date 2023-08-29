@@ -71,11 +71,11 @@ class _LoginPageState extends State<LoginPage> {
         // await pref4.setString("email", data['email']);
 
         if (data['type']! == 'te') {
-          Get.off(() => ClassHomePageScreen());
+          Get.off(() => const ClassHomePageScreen());
         } else if (data['type']! == 'st') {
-          Get.off(() => StudentHomeScreen());
+          Get.off(() => const StudentHomeScreen());
         } else {
-          Get.off(() => ParenHomeScreen());
+          Get.off(() => const ParenHomeScreen());
         }
         // }
 

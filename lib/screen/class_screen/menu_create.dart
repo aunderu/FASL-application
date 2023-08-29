@@ -1,8 +1,8 @@
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
+
 import 'package:flutter/material.dart';
-import 'package:myappv2/screen/class_screen/create_class.dart';
-import 'package:myappv2/screen/class_screen/create_subjext.dart';
+
+import 'create_class.dart';
+import 'create_subjext.dart';
 
 // import package:flutter/widgets.dart.
 
@@ -18,9 +18,9 @@ class _MenuCreateState extends State<MenuCreate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        title: Text(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: const Text(
           "สร้างห้อง/วิชา",
           style: TextStyle(
             color: Colors.black,
@@ -34,7 +34,7 @@ class _MenuCreateState extends State<MenuCreate> {
             child: InkWell(
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return CreateClass();
+                  return const CreateClass();
                 }));
               },
               child: Ink(
@@ -51,14 +51,14 @@ class _MenuCreateState extends State<MenuCreate> {
                       color: Colors.grey.withOpacity(0.5), //color of shadow
                       spreadRadius: 5, //spread radius
                       blurRadius: 7, // blur radius
-                      offset: Offset(0, 2), // changes position of shadow
+                      offset: const Offset(0, 2), // changes position of shadow
                       //first paramerter of offset is left-right
                       //second parameter is top to down
                     ),
                     //you can set more BoxShadow() here
                   ],
                 ),
-                child: Align(
+                child: const Align(
                   alignment: Alignment.center,
                   child: Text(
                     "สร้างชั้นเรียน",
@@ -75,7 +75,7 @@ class _MenuCreateState extends State<MenuCreate> {
             child: InkWell(
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return CreateSubject();
+                  return const CreateSubject();
                 }));
               },
               child: Ink(
@@ -92,14 +92,14 @@ class _MenuCreateState extends State<MenuCreate> {
                       color: Colors.grey.withOpacity(0.5), //color of shadow
                       spreadRadius: 5, //spread radius
                       blurRadius: 7, // blur radius
-                      offset: Offset(0, 2), // changes position of shadow
+                      offset: const Offset(0, 2), // changes position of shadow
                       //first paramerter of offset is left-right
                       //second parameter is top to down
                     ),
                     //you can set more BoxShadow() here
                   ],
                 ),
-                child: Align(
+                child: const Align(
                   alignment: Alignment.center,
                   child: Text(
                     "เพิ่มวิชา",

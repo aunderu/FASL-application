@@ -1,25 +1,15 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:myappv2/screen/class_screen/activity_room.dart';
-import 'package:myappv2/screen/class_screen/addstudent.dart';
-import 'package:myappv2/screen/class_screen/classpage.dart';
-import 'package:myappv2/screen/class_screen/menu_create.dart';
-import 'package:myappv2/screen/class_screen/notifygrade_page.dart';
-import 'package:myappv2/screen/class_screen/subjectpage.dart';
-import 'package:myappv2/screen/class_screen/work_room.dart';
-// import 'package:myappv2/screen/welcome.dart';
-import 'package:myappv2/screen/welcomev2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'homepage.dart';
+import '../../widgets/class_drawer.dart';
+import 'notifygrade_page.dart';
+
 
 class GradeScreen extends StatefulWidget {
   const GradeScreen({super.key});
@@ -31,16 +21,16 @@ class GradeScreen extends StatefulWidget {
 class _GradeScreenState extends State<GradeScreen> {
   // final auth = FirebaseAuth.instance;
 
-  static const routeName = '/';
+
 // กำนหดตัวแปรข้อมูล articles
   late Future<List<Article>> articles;
-  int? id;
+
   String? fname;
+  int? id;
   String? lname;
 
   @override
   void initState() {
-    print("initState");
     super.initState();
     articles = fetchArticle();
     getCred();
@@ -61,19 +51,17 @@ class _GradeScreenState extends State<GradeScreen> {
 
   void _refreshData() {
     setState(() {
-      print("setState");
       articles = fetchArticle();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    print("build"); // สำหรับทดสอบ
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        title: Text(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: const Text(
           'ผลการเรียน',
           style: TextStyle(
             color: Colors.black,
@@ -95,8 +83,6 @@ class _GradeScreenState extends State<GradeScreen> {
           // ชนิดของข้อมูล
           future: articles, // ข้อมูล Future
           builder: (context, snapshot) {
-            print("builder"); // สำหรับทดสอบ
-            print(snapshot.connectionState); // สำหรับทดสอบ
             if (snapshot.hasData) {
               // กรณีมีข้อมูล
               return Column(
@@ -109,7 +95,7 @@ class _GradeScreenState extends State<GradeScreen> {
                         // decoration: BoxDecoration(
                         //   color: Colors.teal.withAlpha(100),
                         // ),
-                        child: Row(
+                        child: const Row(
                           children: [
                             Text(
                               // 'จำนวน ${snapshot.data!.length} รายการ'), // แสดงจำนวนรายการ
@@ -123,7 +109,7 @@ class _GradeScreenState extends State<GradeScreen> {
                   ),
                   Expanded(
                     // ส่วนของลิสรายการ
-                    child: snapshot.data!.length > 0 // กำหนดเงื่อนไขตรงนี้
+                    child: snapshot.data!.isNotEmpty // กำหนดเงื่อนไขตรงนี้
                         ? ListView.separated(
                             // กรณีมีรายการ แสดงปกติ
 
@@ -168,12 +154,8 @@ class _GradeScreenState extends State<GradeScreen> {
                                     ],
                                   ),
                                   child: ListTile(
-                                    title: Text('ชื่อวิชา ' +
-                                        snapshot.data![index].class_name +
-                                        '   ห้อง ' +
-                                        snapshot.data![index].class_room),
-                                    subtitle: Text('ปีการศึกษา ' +
-                                        snapshot.data![index].year),
+                                    title: Text('ชื่อวิชา ${snapshot.data![index].className}   ห้อง ${snapshot.data![index].classRoom}'),
+                                    subtitle: Text('ปีการศึกษา ${snapshot.data![index].year}'),
                                   ),
                                 ),
                               );
@@ -196,54 +178,7 @@ class _GradeScreenState extends State<GradeScreen> {
           },
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text('$fname $lname'),
-              accountEmail: Text("ครู"),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"),
-                backgroundColor: Colors.white,
-              ),
-            ),
-            ListTile(
-              title: const Text('หน้าแรก'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ClassHomePageScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเรียน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return GradeScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเข้ากิจกรรม'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ActivityRoom();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานการส่งงาน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return WorkRoom();
-                }));
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer:  ClassDrawer(fname: fname, lname: lname),
       floatingActionButton: FloatingActionButton(
         // ปุ่มทดสอบสำหรับดึงข้อมูลซ้ำ
         onPressed: _refreshData,
@@ -281,18 +216,13 @@ List<Article> parseArticles(String responseBody) {
 
 // Data models
 class Article {
-  // final int userId;
-  final String id;
-  late final String class_name;
-  late final String class_room;
-  late final String year;
   // final String body;
 
   Article({
     // required this.userId,
     required this.id,
-    required this.class_name,
-    required this.class_room,
+    required this.className,
+    required this.classRoom,
     required this.year,
     // required this.body,
   });
@@ -302,10 +232,17 @@ class Article {
     return Article(
       // userId: json['userId'],
       id: json['id'],
-      class_name: json['class_name'],
-      class_room: json['class_room'],
+      className: json['class_name'],
+      classRoom: json['class_room'],
       year: json['year'],
       // body: json['body'],
     );
   }
+
+  late final String className;
+  late final String classRoom;
+  // final int userId;
+  final String id;
+
+  late final String year;
 }

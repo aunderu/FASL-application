@@ -1,30 +1,13 @@
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-// import 'package:myappv2/screen/class_screen/GradeStudent.dart';
-import 'package:myappv2/screen/class_screen/addstudentv2.dart';
-import 'package:myappv2/screen/class_screen/class_activity.dart';
-import 'package:myappv2/screen/class_screen/classpage.dart';
-import 'package:myappv2/screen/class_screen/grade_camera.dart';
-import 'package:myappv2/screen/class_screen/menu_create.dart';
-import 'package:myappv2/screen/class_screen/subjectpage.dart';
-import 'package:myappv2/screen/class_screen/work_room.dart';
-// import 'package:myappv2/screen/welcome.dart';
-import 'package:myappv2/screen/welcomev2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:myappv2/screen/class_screen/addstudentv2.dart';
-
-import 'homepage.dart';
 
 // class DogService {
 //   static randomDog() {
@@ -36,9 +19,6 @@ import 'homepage.dart';
 // }
 
 class MessageDogsDao {
-  String? status;
-  String? message;
-
   MessageDogsDao({this.status, this.message});
 
   MessageDogsDao.fromJson(Map<String, dynamic> json) {
@@ -46,10 +26,13 @@ class MessageDogsDao {
     message = json['message'];
   }
 
+  String? message;
+  String? status;
+
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
+    data['message'] = message;
     return data;
   }
 }
@@ -88,39 +71,22 @@ class DogService {
 // }
 
 class GradeStudent extends StatefulWidget {
-  final String? idst;
-  final String? idcl;
   const GradeStudent(this.idst, this.idcl, {super.key});
+
+  final String? idcl;
+  final String? idst;
 
   @override
   State<GradeStudent> createState() => _GradeStudentState();
 }
 
 class _GradeStudentState extends State<GradeStudent> {
+  String? fname;
   late Future<dynamic> futureAlbum;
   int? id;
-  String? fname;
   String? lname;
+  File? pickedImage;
 
-  // ignore: annotate_overrides
-  void initState() {
-    DogService.randomDog(widget.idst.toString());
-    super.initState();
-    // fetchJSON();
-    // futureAlbum = fetchAlbum();
-    getCred();
-  }
-
-  // ignore: unused_element
-  void _refreshData() {
-    setState(() {
-      print("setState");
-      DogService.randomDog(widget.idst.toString());
-      // fetchJSON();
-    });
-  }
-
-  @override
   void getCred() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     SharedPreferences pref1 = await SharedPreferences.getInstance();
@@ -134,7 +100,15 @@ class _GradeStudentState extends State<GradeStudent> {
     });
   }
 
-  File? pickedImage;
+  // ignore: annotate_overrides
+  void initState() {
+    DogService.randomDog(widget.idst.toString());
+    super.initState();
+    // fetchJSON();
+    // futureAlbum = fetchAlbum();
+    getCred();
+  }
+
   void imagePickerOption() {
     Get.bottomSheet(
       SingleChildScrollView(
@@ -202,7 +176,6 @@ class _GradeStudentState extends State<GradeStudent> {
       final tempImage = File(photo.path);
 
       // delrecord(tempImage);
-      print(tempImage);
       setState(() {
         pickedImage = tempImage;
       });
@@ -222,14 +195,21 @@ class _GradeStudentState extends State<GradeStudent> {
     }
   }
 
+  // ignore: unused_element
+  void _refreshData() {
+    setState(() {
+      DogService.randomDog(widget.idst.toString());
+      // fetchJSON();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("build"); // สำหรับทดสอบ
     return Scaffold(
       body: Scaffold(
         appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.black),
-          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+          iconTheme: const IconThemeData(color: Colors.black),
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
           centerTitle: true,
           title: const Text(
             'อัพโหลดผลการเรียน',
@@ -267,13 +247,12 @@ class _GradeStudentState extends State<GradeStudent> {
                                   // print("snap = " + msg.message.toString());
                                   if (msg.message.toString() != 'null') {
                                     return Image.network(
-                                      'https://fasl.chabafarm.com/storage/file/' +
-                                          msg.message.toString(),
+                                      'https://fasl.chabafarm.com/storage/file/${msg.message}',
                                       width: 500,
                                       height: 500,
                                     );
                                   } else {
-                                    return Text("ไม่มีการอัพโหลด");
+                                    return const Text("ไม่มีการอัพโหลด");
                                   }
                                 } else {
                                   // ignore: prefer_const_constructors

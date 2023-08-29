@@ -1,31 +1,19 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:myappv2/screen/class_screen/activity_room.dart';
-import 'package:myappv2/screen/class_screen/addstudent.dart';
-import 'package:myappv2/screen/class_screen/addstudentv2.dart';
-import 'package:myappv2/screen/class_screen/class_activity.dart';
-import 'package:myappv2/screen/class_screen/create_class.dart';
-import 'package:myappv2/screen/class_screen/create_subjext.dart';
-import 'package:myappv2/screen/class_screen/grade_page.dart';
-import 'package:myappv2/screen/class_screen/menu_create.dart';
-import 'package:myappv2/screen/class_screen/studentclass.dart';
-import 'package:myappv2/screen/class_screen/subjectpage.dart';
-import 'package:myappv2/screen/class_screen/update_class.dart';
-import 'package:myappv2/screen/class_screen/work_room.dart';
-// import 'package:myappv2/screen/welcome.dart';
-import 'package:myappv2/screen/welcomev2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'homepage.dart';
+import '../../widgets/class_drawer.dart';
+import 'class_activity.dart';
+import 'create_class.dart';
+import 'create_subjext.dart';
+import 'subjectpage.dart';
+import 'update_class.dart';
 
 class ClassHomePageScreen extends StatefulWidget {
   const ClassHomePageScreen({super.key});
@@ -37,15 +25,15 @@ class ClassHomePageScreen extends StatefulWidget {
 class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
   // final auth = FirebaseAuth.instance;
 
-  static const routeName = '/';
 // กำนหดตัวแปรข้อมูล articles
   late Future<List<Article>> articles;
-  int? id;
+
   String? fname;
+  int? id;
   String? lname;
+
   @override
   void initState() {
-    print("initState");
     super.initState();
     articles = fetchArticle();
     getCred();
@@ -64,19 +52,21 @@ class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
     });
   }
 
-  Future<void> delrecord(String StId, String status) async {
+  Future<void> delrecord(String stId, String status) async {
     // CircularProgressIndicator();
     // String? idc = widget.idclass;
     try {
       String uri = "https://fasl.chabafarm.com/api/teacher/class_room/status";
-      CircularProgressIndicator();
+      const CircularProgressIndicator();
       var res =
-          await http.post(Uri.parse(uri), body: {"id": StId, "status": status});
+          await http.post(Uri.parse(uri), body: {"id": stId, "status": status});
       var response = jsonDecode(res.body);
       if (response['status'] == "success") {
         _refreshData();
       } else {}
-    } catch (e) {}
+    } catch (e) {
+      // print("error");
+    }
   }
 
   Future<void> deleterecord(String idclass) async {
@@ -90,7 +80,9 @@ class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
       if (response['status'] == "success") {
         _refreshData();
       } else {}
-    } catch (e) {}
+    } catch (e) {
+      // print("error");
+    }
   }
 
   void _refreshData() {
@@ -101,13 +93,12 @@ class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("build"); // สำหรับทดสอบ
     return Scaffold(
       // backgroundColor: Color.fromARGB(246, 253, 253, 252),
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        title: Text(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: const Text(
           'ติดตามนักเรียน',
           style: TextStyle(
             color: Colors.black,
@@ -179,8 +170,6 @@ class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
 
           future: articles, // ข้อมูล Future
           builder: (context, snapshot) {
-            print("builder"); // สำหรับทดสอบ
-            print(snapshot.connectionState); // สำหรับทดสอบ
             if (snapshot.hasData) {
               // กรณีมีข้อมูล
               return Column(
@@ -194,21 +183,19 @@ class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
                             Padding(
                               padding: const EdgeInsets.all(3.0),
                               child: ElevatedButton(
-                                child: Text("ประจำชั้น"),
                                 style: ElevatedButton.styleFrom(
-                                  primary: Color.fromARGB(255, 98, 86, 226),
+                                  backgroundColor: const Color.fromARGB(255, 98, 86, 226),
                                   elevation: 0,
                                 ),
                                 onPressed: () {},
+                                child: const Text("ประจำชั้น"),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(3.0),
                               child: OutlinedButton(
-                                child: Text("รายวิชา"),
                                 style: OutlinedButton.styleFrom(
-                                  primary: Color.fromARGB(255, 98, 86, 226),
-                                  side: BorderSide(
+                                  foregroundColor: const Color.fromARGB(255, 98, 86, 226), side: const BorderSide(
                                     color: Color.fromARGB(255, 98, 86, 226),
                                   ),
                                 ),
@@ -216,9 +203,10 @@ class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
                                     // return CreateClass();
-                                    return SubjectHomePageScreen();
+                                    return const SubjectHomePageScreen();
                                   }));
                                 },
+                                child: const Text("รายวิชา"),
                               ),
                             ),
                           ],
@@ -228,7 +216,7 @@ class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
                   ),
                   Expanded(
                     // ส่วนของลิสรายการ
-                    child: snapshot.data!.length > 0 // กำหนดเงื่อนไขตรงนี้
+                    child: snapshot.data!.isNotEmpty // กำหนดเงื่อนไขตรงนี้
                         ? ListView.separated(
                             // กรณีมีรายการ แสดงปกติ
 
@@ -276,13 +264,8 @@ class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
                                   child: Column(
                                     children: [
                                       ListTile(
-                                        title: Text('' +
-                                            snapshot.data![index].class_name +
-                                            '   ห้อง ' +
-                                            snapshot.data![index].class_room),
-                                        subtitle: Text('ปีการศึกษา ' +
-                                            snapshot.data![index].year +
-                                            snapshot.data![index].status),
+                                        title: Text('${snapshot.data![index].className}   ห้อง ${snapshot.data![index].classRoom}'),
+                                        subtitle: Text('ปีการศึกษา ${snapshot.data![index].year}${snapshot.data![index].status}'),
                                         trailing: Column(
                                           children: [
                                             if (snapshot.data![index].status ==
@@ -326,25 +309,25 @@ class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
                                                       // return CreateClass();
                                                       return UpdateClassScreen(
                                                           snapshot.data![index]
-                                                              .class_name,
+                                                              .className,
                                                           snapshot.data![index]
-                                                              .class_room,
+                                                              .classRoom,
                                                           snapshot.data![index]
                                                               .year,
                                                           snapshot
                                                               .data![index].id);
                                                     }));
                                                   },
-                                                  child: Row(
+                                                  child: const Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
                                                             .center,
                                                     children: [
                                                       Padding(
                                                         padding:
-                                                            const EdgeInsets
+                                                            EdgeInsets
                                                                 .all(0),
-                                                        child: const Text(
+                                                        child: Text(
                                                           "แก้ไขข้อมูล",
                                                           style: TextStyle(
                                                             color: Colors.black,
@@ -364,11 +347,11 @@ class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
                                                     deleterecord(snapshot
                                                         .data![index].id);
                                                   },
-                                                  child: Row(
+                                                  child: const Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
                                                             .center,
-                                                    children: const [
+                                                    children: [
                                                       Padding(
                                                         padding:
                                                             EdgeInsets.all(0),
@@ -408,54 +391,7 @@ class _ClassHomePageScreenState extends State<ClassHomePageScreen> {
           },
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text('$fname $lname'),
-              accountEmail: Text("ครู"),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"),
-                backgroundColor: Colors.white,
-              ),
-            ),
-            ListTile(
-              title: const Text('หน้าแรก'),
-              onTap: () {
-                // Navigator.push(context, MaterialPageRoute(builder: (context) {
-                //   return GradeScreen();
-                // }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเรียน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return GradeScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเข้ากิจกรรม'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ActivityRoom();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานการส่งงาน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return WorkRoom();
-                }));
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer:  ClassDrawer(fname: fname, lname: lname),
       floatingActionButton: FloatingActionButton(
         // ปุ่มทดสอบสำหรับดึงข้อมูลซ้ำ
         onPressed: _refreshData,
@@ -493,19 +429,13 @@ List<Article> parseArticles(String responseBody) {
 
 // Data models
 class Article {
-  // final int userId;
-  final String id;
-  late final String class_name;
-  late final String class_room;
-  late final String year;
-  late final String status;
   // final String body;
 
   Article({
     // required this.userId,
     required this.id,
-    required this.class_name,
-    required this.class_room,
+    required this.className,
+    required this.classRoom,
     required this.year,
     required this.status,
     // required this.body,
@@ -516,23 +446,31 @@ class Article {
     return Article(
       // userId: json['userId'],
       id: json['id'],
-      class_name: json['class_name'],
-      class_room: json['class_room'],
+      className: json['class_name'],
+      classRoom: json['class_room'],
       year: json['year'],
       status: json['status'],
       // body: json['body'],
     );
   }
+
+  late final String className;
+  late final String classRoom;
+  // final int userId;
+  final String id;
+
+  late final String status;
+  late final String year;
 }
 
 class MenuItem {
-  final String text;
-  final IconData icon;
-
   const MenuItem({
     required this.text,
     required this.icon,
   });
+
+  final IconData icon;
+  final String text;
 }
 
 class MenuItems {
@@ -543,7 +481,9 @@ class MenuItems {
     text: 'เพิ่มชั้นเรียน',
     icon: Icons.add,
   );
+
   static const share = MenuItem(text: 'เพิ่มวิชา', icon: Icons.add);
+
   // static const settings = MenuItem(text: 'Settings', icon: Icons.settings);
   // static const logout = MenuItem(text: 'Log Out', icon: Icons.logout);
 
@@ -569,7 +509,7 @@ class MenuItems {
       case MenuItems.home:
         //Do something
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return CreateClass();
+          return const CreateClass();
         }));
         break;
       // case MenuItems.settings:
@@ -578,7 +518,7 @@ class MenuItems {
       case MenuItems.share:
         //Do something
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return CreateSubject();
+          return const CreateSubject();
         }));
         break;
       // case MenuItems.logout:

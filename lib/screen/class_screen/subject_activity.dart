@@ -1,39 +1,19 @@
 import 'dart:convert';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:myappv2/screen/class_screen/activity_room.dart';
-// import 'package:myappv2/screen/class_screen/SubjectActivity.dart';
-import 'package:myappv2/screen/class_screen/addstudentv2.dart';
-import 'package:myappv2/screen/class_screen/classpage.dart';
-import 'package:myappv2/screen/class_screen/create_subject_activity.dart';
-import 'package:myappv2/screen/class_screen/grade_page.dart';
-import 'package:myappv2/screen/class_screen/menu_create.dart';
-import 'package:myappv2/screen/class_screen/student_subject.dart';
-import 'package:myappv2/screen/class_screen/subject_add_student.dart';
-import 'package:myappv2/screen/class_screen/subjectpage.dart';
-import 'package:myappv2/screen/class_screen/update_class_subject.dart';
-import 'package:myappv2/screen/class_screen/work_room.dart';
-// import 'package:myappv2/screen/welcome.dart';
-import 'package:myappv2/screen/welcomev2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:myappv2/screen/class_screen/addstudentv2.dart';
 
-import 'homepage.dart';
+import '../../widgets/class_drawer.dart';
+import 'create_subject_activity.dart';
+import 'student_subject.dart';
+import 'subject_add_student.dart';
+import 'update_class_subject.dart';
+
 
 class Object {
-  int? id;
-  String? fname;
-  String? lname;
-  String? email;
-  String? status;
-
   Object({this.id, this.fname, this.lname, this.email, this.status});
 
   factory Object.fromJson(Map<String, dynamic> json) {
@@ -44,36 +24,28 @@ class Object {
         email: json['email'],
         status: json['status']);
   }
+
+  String? email;
+  String? fname;
+  int? id;
+  String? lname;
+  String? status;
 }
 
 class SubjectActivity extends StatefulWidget {
-  final String? idclass;
   const SubjectActivity(this.idclass, {super.key});
+
+  final String? idclass;
 
   @override
   State<SubjectActivity> createState() => _SubjectActivityState();
 }
 
 class _SubjectActivityState extends State<SubjectActivity> {
-  int? id;
   String? fname;
+  int? id;
   String? lname;
 
-  void initState() {
-    print("initState");
-    super.initState();
-    fetchJSON();
-    getCred();
-  }
-
-  void _refreshData() {
-    setState(() {
-      print("setState");
-      fetchJSON();
-    });
-  }
-
-  @override
   void getCred() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     SharedPreferences pref1 = await SharedPreferences.getInstance();
@@ -87,6 +59,13 @@ class _SubjectActivityState extends State<SubjectActivity> {
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+    fetchJSON();
+    getCred();
+  }
+
   Future<void> delrecord(String id, String status) async {
     // String? idc = widget.idclass;
     try {
@@ -97,18 +76,17 @@ class _SubjectActivityState extends State<SubjectActivity> {
       var response = jsonDecode(res.body);
       if (response['status'] == "success") {
         _refreshData();
-        print("yes");
+        // print("yes");
       } else {
-        print("not");
+        // print("not");
       }
     } catch (e) {
-      print("ddd");
+      // print("ddd");
     }
   }
 
   Future<List<Object>> fetchJSON() async {
     String? idca = widget.idclass;
-    print(idca);
     var jsonResponse = await http.get(Uri.parse(
         'https://fasl.chabafarm.com/api/teacher/add_student/activity/$idca'));
 
@@ -139,13 +117,19 @@ class _SubjectActivityState extends State<SubjectActivity> {
     }
   }
 
+  void _refreshData() {
+    setState(() {
+      fetchJSON();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        title: Text(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: const Text(
           'งานของชั้นเรียน',
           style: TextStyle(
             color: Colors.black,
@@ -180,12 +164,12 @@ class _SubjectActivityState extends State<SubjectActivity> {
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
                           onPressed: () {},
-                          child: Text('งานของชั้นเรียน'),
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
+                          child: const Text('งานของชั้นเรียน'),
                         ),
                       ),
                       Padding(
@@ -198,13 +182,13 @@ class _SubjectActivityState extends State<SubjectActivity> {
                               return StudentSubject(widget.idclass);
                             }));
                           },
-                          child: Text('นักเรียน'),
                           style: OutlinedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.circular(8), // <-- Radius
                             ),
                           ),
+                          child: const Text('นักเรียน'),
                         ),
                       ),
                       Padding(
@@ -217,12 +201,12 @@ class _SubjectActivityState extends State<SubjectActivity> {
                               return CreateStudentSubject(widget.idclass);
                             }));
                           },
-                          child: Text('+ เพิ่มนักเรียน'),
                           style: OutlinedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
+                          child: const Text('+ เพิ่มนักเรียน'),
                         ),
                       ),
                     ],
@@ -245,12 +229,12 @@ class _SubjectActivityState extends State<SubjectActivity> {
                               return CreateSubjectActivity(widget.idclass);
                             }));
                           },
-                          child: Text('+ สร้าง'),
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
+                          child: const Text('+ สร้าง'),
                         ),
                       ),
                     ],
@@ -260,7 +244,7 @@ class _SubjectActivityState extends State<SubjectActivity> {
                     child: ListView.builder(
                         shrinkWrap: true,
                         physics: const BouncingScrollPhysics(),
-                        itemCount: items == null ? 0 : items.length,
+                        itemCount: items.isEmpty ? 0 : items.length,
                         itemBuilder: (context, index) {
                           return Column(
                             children: [
@@ -311,7 +295,7 @@ class _SubjectActivityState extends State<SubjectActivity> {
                                       ),
                                       leading: CircleAvatar(
                                         backgroundColor:
-                                            Color.fromARGB(255, 242, 2, 250),
+                                            const Color.fromARGB(255, 242, 2, 250),
                                         child: Text(
                                             items[index].fname.toString()[0],
                                             style: const TextStyle(
@@ -343,10 +327,10 @@ class _SubjectActivityState extends State<SubjectActivity> {
                                                             .toString());
                                                   }));
                                                 },
-                                                child: Row(
+                                                child: const Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
-                                                  children: const [
+                                                  children: [
                                                     Padding(
                                                       padding:
                                                           EdgeInsets.all(0),
@@ -371,10 +355,10 @@ class _SubjectActivityState extends State<SubjectActivity> {
                                                       .id
                                                       .toString());
                                                 },
-                                                child: Row(
+                                                child: const Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
-                                                  children: const [
+                                                  children: [
                                                     Padding(
                                                       padding:
                                                           EdgeInsets.all(0),
@@ -413,54 +397,7 @@ class _SubjectActivityState extends State<SubjectActivity> {
         onPressed: _refreshData,
         child: const Icon(Icons.refresh),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text('$fname $lname'),
-              accountEmail: Text("ครู"),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"),
-                backgroundColor: Colors.white,
-              ),
-            ),
-            ListTile(
-              title: const Text('หน้าแรก'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ClassHomePageScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเรียน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return GradeScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเข้ากิจกรรม'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ActivityRoom();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานการส่งงาน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return WorkRoom();
-                }));
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer:  ClassDrawer(fname: fname, lname: lname),
     );
   }
 }

@@ -3,20 +3,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:myappv2/screen/class_screen/activity_room.dart';
-import 'package:myappv2/screen/class_screen/class_activity.dart';
-import 'package:myappv2/screen/class_screen/classpage.dart';
-import 'package:myappv2/screen/class_screen/grade_page.dart';
-import 'package:myappv2/screen/class_screen/subject_activity.dart';
-import 'package:myappv2/screen/class_screen/subjectpage.dart';
-import 'package:myappv2/screen/class_screen/work_room.dart';
-// import 'package:myappv2/screen/welcome.dart';
-import 'package:myappv2/screen/welcomev2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../widgets/class_drawer.dart';
+import 'subject_activity.dart';
 
 Future<Album> createAlbum(
-    String act_name, String act_detail, String crID) async {
+    String actName, String actDetail, String crID) async {
   // int? id = 0;
   // SharedPreferences pref = await SharedPreferences.getInstance();
   // id = pref.getInt("id")!;
@@ -26,8 +19,8 @@ Future<Album> createAlbum(
       'Content-Type': 'application/json; charset=UTF-8',
     },
     body: jsonEncode(<String, String>{
-      'act_name': act_name,
-      'act_detail': act_detail,
+      'act_name': actName,
+      'act_detail': actDetail,
     }),
   );
 
@@ -43,16 +36,16 @@ Future<Album> createAlbum(
 }
 
 class Album {
-  final String? act_name;
-  final String? act_detail;
+  final String? actName;
+  final String? actDetail;
   final String? crID;
   final String? teID;
   final String? type;
   final String? status;
 
   const Album({
-    required this.act_name,
-    required this.act_detail,
+    required this.actName,
+    required this.actDetail,
     required this.crID,
     required this.teID,
     required this.type,
@@ -61,8 +54,8 @@ class Album {
 
   factory Album.fromJson(Map<String, dynamic> json) {
     return Album(
-      act_name: json['act_name'],
-      act_detail: json['act_detail'],
+      actName: json['act_name'],
+      actDetail: json['act_detail'],
       crID: json['crID'],
       teID: json['teID'],
       type: json['type'],
@@ -96,8 +89,8 @@ class UpdateClassSubjectScreen extends StatefulWidget {
 class _UpdateClassSubjectScreenState extends State<UpdateClassSubjectScreen> {
   // final auth = FirebaseAuth.instance;
 
-  final TextEditingController _act_name = TextEditingController();
-  final TextEditingController _act_detail = TextEditingController();
+  final TextEditingController _actName = TextEditingController();
+  final TextEditingController _actDetail = TextEditingController();
   // final TextEditingController _year = TextEditingController();
   // final TextEditingController _class_teacher = TextEditingController();
   // final TextEditingController _teID = TextEditingController();
@@ -130,8 +123,8 @@ class _UpdateClassSubjectScreenState extends State<UpdateClassSubjectScreen> {
   void initState() {
     super.initState();
     setState(() {
-      _act_name.text = widget.editactivity.toString();
-      _act_detail.text = widget.editdetail.toString();
+      _actName.text = widget.editactivity.toString();
+      _actDetail.text = widget.editdetail.toString();
     });
   }
 
@@ -145,8 +138,8 @@ class _UpdateClassSubjectScreenState extends State<UpdateClassSubjectScreen> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.black),
-          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+          iconTheme: const IconThemeData(color: Colors.black),
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
           title: const Text(
             'แก้ไขกิจกรรม',
             style: TextStyle(
@@ -159,55 +152,7 @@ class _UpdateClassSubjectScreenState extends State<UpdateClassSubjectScreen> {
           padding: const EdgeInsets.all(20.0),
           child: (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
         ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              UserAccountsDrawerHeader(
-                accountName: Text('$fname $lname'),
-                // accountEmail: Text(auth.currentUser!.email.toString()),
-                accountEmail: Text("ครู"),
-                currentAccountPicture: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      "https://cdn-icons-png.flaticon.com/512/149/149071.png"),
-                  backgroundColor: Colors.white,
-                ),
-              ),
-              ListTile(
-                title: const Text('หน้าแรก'),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ClassHomePageScreen();
-                  }));
-                },
-              ),
-              ListTile(
-                title: const Text('รายงานผลการเรียน'),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return GradeScreen();
-                  }));
-                },
-              ),
-              ListTile(
-                title: const Text('รายงานผลการเข้ากิจกรรม'),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ActivityRoom();
-                  }));
-                },
-              ),
-              ListTile(
-                title: const Text('รายงานการส่งงาน'),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return WorkRoom();
-                  }));
-                },
-              ),
-            ],
-          ),
-        ),
+        drawer:  ClassDrawer(fname: fname, lname: lname),
       ),
     );
   }
@@ -218,14 +163,14 @@ class _UpdateClassSubjectScreenState extends State<UpdateClassSubjectScreen> {
 
       children: <Widget>[
         TextField(
-          controller: _act_name,
+          controller: _actName,
           decoration: const InputDecoration(
             border: UnderlineInputBorder(),
             labelText: 'ชื่อกิจกรรม:',
           ),
         ),
         TextField(
-          controller: _act_detail,
+          controller: _actDetail,
           // minLines: 4,
           // keyboardType: TextInputType.multiline,
           // maxLines: null,
@@ -239,7 +184,7 @@ class _UpdateClassSubjectScreenState extends State<UpdateClassSubjectScreen> {
             setState(
               () {
                 _futureAlbum = createAlbum(
-                    _act_name.text, _act_detail.text, widget.editid.toString());
+                    _actName.text, _actDetail.text, widget.editid.toString());
               },
             );
             Navigator.push(

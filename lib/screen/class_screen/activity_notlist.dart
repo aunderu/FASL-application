@@ -1,28 +1,13 @@
 import 'dart:convert';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:myappv2/screen/class_screen/activity_list.dart';
-import 'package:myappv2/screen/class_screen/activity_room.dart';
-import 'package:myappv2/screen/class_screen/class_activity.dart';
-import 'package:myappv2/screen/class_screen/classpage.dart';
-import 'package:myappv2/screen/class_screen/grade_page.dart';
-// import 'package:myappv2/screen/class_screen/ActivityNotParticipate.dart';
-import 'package:myappv2/screen/class_screen/menu_create.dart';
-import 'package:myappv2/screen/class_screen/studentclass.dart';
-import 'package:myappv2/screen/class_screen/subjectpage.dart';
-import 'package:myappv2/screen/class_screen/work_room.dart';
-// import 'package:myappv2/screen/welcome.dart';
-import 'package:myappv2/screen/welcomev2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'homepage.dart';
+import '../../widgets/class_drawer.dart';
+import 'activity_list.dart';
 
 class Object {
   int? id;
@@ -54,8 +39,9 @@ class _ActivityNotParticipateState extends State<ActivityNotParticipate> {
   int? id;
   String? fnamelogin;
   String? lnamelogin;
+
+  @override
   void initState() {
-    print("initState");
     super.initState();
     fetchJSON();
     getCred();
@@ -63,12 +49,10 @@ class _ActivityNotParticipateState extends State<ActivityNotParticipate> {
 
   void _refreshData() {
     setState(() {
-      print("setState");
       fetchJSON();
     });
   }
 
-  @override
   void getCred() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     SharedPreferences pref1 = await SharedPreferences.getInstance();
@@ -82,23 +66,23 @@ class _ActivityNotParticipateState extends State<ActivityNotParticipate> {
     });
   }
 
-  Future<void> delrecord(String StId) async {
+  Future<void> delrecord(String stId) async {
     String? idc = widget.idclass;
     String? idacta = widget.idactivity;
     try {
       String uri =
           "https://fasl.chabafarm.com/api/teacher/activity/addstudent/$idc/$idacta";
 
-      var res = await http.post(Uri.parse(uri), body: {"stID": StId});
+      var res = await http.post(Uri.parse(uri), body: {"stID": stId});
       var response = jsonDecode(res.body);
       if (response['status'] == "success") {
         _refreshData();
-        print("yes");
+        // print("yes");
       } else {
-        print("not");
+        // print("not");
       }
     } catch (e) {
-      print("ddd");
+      // print("ddd");
     }
   }
 
@@ -124,12 +108,11 @@ class _ActivityNotParticipateState extends State<ActivityNotParticipate> {
 
   @override
   Widget build(BuildContext context) {
-    print("build"); // สำหรับทดสอบ
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        title: Text(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: const Text(
           'กิจกรรมของชั้นเรียน',
           style: TextStyle(
             color: Colors.black,
@@ -171,30 +154,30 @@ class _ActivityNotParticipateState extends State<ActivityNotParticipate> {
                                   widget.idclass, widget.idactivity);
                             }));
                           },
-                          child: Text('เข้าร่วม'),
                           style: OutlinedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
+                          child: const Text('เข้าร่วม'),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
                           onPressed: () {},
-                          child: Text('ไม่เข้าร่วม'),
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.circular(8), // <-- Radius
                             ),
                           ),
+                          child: const Text('ไม่เข้าร่วม'),
                         ),
                       ),
                     ],
                   ),
-                  Divider(
+                  const Divider(
                     color: Colors.black45,
                     indent: 16.0,
                   ),
@@ -203,16 +186,14 @@ class _ActivityNotParticipateState extends State<ActivityNotParticipate> {
                     child: ListView.builder(
                         shrinkWrap: true,
                         physics: const BouncingScrollPhysics(),
-                        itemCount: items == null ? 0 : items.length,
+                        itemCount: items.isEmpty ? 0 : items.length,
                         itemBuilder: (context, index) {
                           return Column(
                             children: [
                               Card(
                                 child: ListTile(
                                   title: Text(
-                                    items[index].fname.toString() +
-                                        '  ' +
-                                        items[index].lname.toString(),
+                                    '${items[index].fname}  ${items[index].lname}',
                                   ),
                                   // onTap: () {
                                   //   getItemAndNavigate(items[index].name.toString(),
@@ -222,14 +203,14 @@ class _ActivityNotParticipateState extends State<ActivityNotParticipate> {
                                     items[index].email.toString(),
                                   ),
                                   trailing: IconButton(
-                                    icon: Icon(Icons.add),
+                                    icon: const Icon(Icons.add),
                                     onPressed: () {
                                       delrecord(items[index].id.toString());
                                     },
                                   ),
                                   leading: CircleAvatar(
                                     backgroundColor:
-                                        Color.fromARGB(255, 242, 2, 250),
+                                        const Color.fromARGB(255, 242, 2, 250),
                                     child:
                                         Text(items[index].fname.toString()[0],
                                             style: const TextStyle(
@@ -253,54 +234,7 @@ class _ActivityNotParticipateState extends State<ActivityNotParticipate> {
           },
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text('Rusdee Lanong'),
-              accountEmail: Text("ครู"),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"),
-                backgroundColor: Colors.white,
-              ),
-            ),
-            ListTile(
-              title: const Text('หน้าแรก'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ClassHomePageScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเรียน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return GradeScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเข้ากิจกรรม'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ActivityRoom();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานการส่งงาน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return WorkRoom();
-                }));
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer:  ClassDrawer(fname: fnamelogin, lname: lnamelogin),
     );
   }
 }

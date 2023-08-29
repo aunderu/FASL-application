@@ -3,14 +3,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:myappv2/screen/class_screen/activity_room.dart';
-import 'package:myappv2/screen/class_screen/classpage.dart';
-import 'package:myappv2/screen/class_screen/grade_page.dart';
-import 'package:myappv2/screen/class_screen/work_room.dart';
-// import 'package:myappv2/screen/welcome.dart';
-import 'package:myappv2/screen/welcomev2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../widgets/class_drawer.dart';
+import 'classpage.dart';
 
 Future<Album> createAlbum(
   String name,
@@ -20,7 +16,6 @@ Future<Album> createAlbum(
   int? id = 0;
   SharedPreferences pref = await SharedPreferences.getInstance();
   id = pref.getInt("id")!;
-  print(id);
   var response = await http.post(
     Uri.parse('https://fasl.chabafarm.com/api/teacher/class_room/store'),
     headers: <String, String>{
@@ -48,31 +43,31 @@ Future<Album> createAlbum(
 }
 
 class Album {
-  final String? class_name;
-  final String? class_room;
-  final String? year;
-  final String? class_teacher;
-  final String? teID;
-  final String? type;
-
   const Album(
-      {required this.class_name,
-      required this.class_room,
+      {required this.className,
+      required this.classRoom,
       required this.year,
-      required this.class_teacher,
+      required this.classTeacher,
       required this.teID,
       required this.type});
 
   factory Album.fromJson(Map<String, dynamic> json) {
     return Album(
-      class_name: json['class_name'],
-      class_room: json['class_room'],
+      className: json['class_name'],
+      classRoom: json['class_room'],
       year: json['year'],
-      class_teacher: json['class_teacher'],
+      classTeacher: json['class_teacher'],
       teID: json['teID'],
       type: json['type'],
     );
   }
+
+  final String? className;
+  final String? classRoom;
+  final String? classTeacher;
+  final String? teID;
+  final String? type;
+  final String? year;
 }
 
 void main() {
@@ -91,19 +86,22 @@ class CreateClass extends StatefulWidget {
 }
 
 class _CreateClassState extends State<CreateClass> {
+  String? fname;
+  int? id;
+  String? lname;
+
   // final auth = FirebaseAuth.instance;
 
-  final TextEditingController _class_name = TextEditingController();
-  final TextEditingController _class_room = TextEditingController();
-  final TextEditingController _year = TextEditingController();
-  final TextEditingController _class_teacher = TextEditingController();
-  final TextEditingController _teID = TextEditingController();
-  final TextEditingController _type = TextEditingController();
+  final TextEditingController _className = TextEditingController();
+
+  final TextEditingController _classRoom = TextEditingController();
+  final TextEditingController _classTeacher = TextEditingController();
   // SingingCharacter? _character = SingingCharacter.lafayette;
   Future<Album>? _futureAlbum;
-  int? id;
-  String? fname;
-  String? lname;
+
+  final TextEditingController _teID = TextEditingController();
+  final TextEditingController _type = TextEditingController();
+  final TextEditingController _year = TextEditingController();
 
   void getCred() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -118,94 +116,17 @@ class _CreateClassState extends State<CreateClass> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Create Data Example',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.black),
-          backgroundColor: Color.fromARGB(255, 255, 255, 255),
-          title: const Text(
-            'สร้างชั้นเรียน',
-            style: TextStyle(
-              color: Colors.black,
-            ),
-          ),
-        ),
-        body: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(20.0),
-          child: (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
-        ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              UserAccountsDrawerHeader(
-                accountName: Text('$fname $lname'),
-                // accountEmail: Text(auth.currentUser!.email.toString()),
-                accountEmail: Text("ครู"),
-                currentAccountPicture: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      "https://cdn-icons-png.flaticon.com/512/149/149071.png"),
-                  backgroundColor: Colors.white,
-                ),
-              ),
-              ListTile(
-                title: const Text('หน้าแรก'),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ClassHomePageScreen();
-                  }));
-                },
-              ),
-              ListTile(
-                title: const Text('รายงานผลการเรียน'),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return GradeScreen();
-                  }));
-                },
-              ),
-              ListTile(
-                title: const Text('รายงานผลการเข้ากิจกรรม'),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ActivityRoom();
-                  }));
-                },
-              ),
-              ListTile(
-                title: const Text('รายงานการส่งงาน'),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return WorkRoom();
-                  }));
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Column buildColumn() {
     return Column(
       // mainAxisAlignment: MainAxisAlignment.center,
 
       children: <Widget>[
         TextField(
-          controller: _class_name,
+          controller: _className,
           decoration: const InputDecoration(hintText: 'ชื่อห้อง'),
         ),
         TextField(
-          controller: _class_room,
+          controller: _classRoom,
           decoration: const InputDecoration(hintText: 'ห้อง'),
         ),
         TextField(
@@ -229,13 +150,13 @@ class _CreateClassState extends State<CreateClass> {
             setState(
               () {
                 _futureAlbum =
-                    createAlbum(_class_name.text, _class_room.text, _year.text);
+                    createAlbum(_className.text, _classRoom.text, _year.text);
               },
             );
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ClassHomePageScreen(),
+                  builder: (context) => const ClassHomePageScreen(),
                 ));
           },
           child: const Text('บันทึก'),
@@ -257,6 +178,35 @@ class _CreateClassState extends State<CreateClass> {
 
         return const CircularProgressIndicator();
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Create Data Example',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: Scaffold(
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.black),
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+          title: const Text(
+            'สร้างชั้นเรียน',
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+        ),
+        body: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(20.0),
+          child: (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
+        ),
+        drawer:  ClassDrawer(fname: fname, lname: lname),
+      ),
     );
   }
 }

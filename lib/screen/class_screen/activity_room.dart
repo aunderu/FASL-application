@@ -1,46 +1,28 @@
 import 'dart:convert';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:myappv2/screen/class_screen/activity_list.dart';
-// import 'package:myappv2/screen/class_screen/ActivityRoom.dart';
-import 'package:myappv2/screen/class_screen/addstudentv2.dart';
-import 'package:myappv2/screen/class_screen/classpage.dart';
-import 'package:myappv2/screen/class_screen/create_class_activity.dart';
-import 'package:myappv2/screen/class_screen/create_subject_activity.dart';
-import 'package:myappv2/screen/class_screen/grade_page.dart';
-import 'package:myappv2/screen/class_screen/menu_create.dart';
-import 'package:myappv2/screen/class_screen/student_subject.dart';
-import 'package:myappv2/screen/class_screen/studentclass.dart';
-import 'package:myappv2/screen/class_screen/subject_add_student.dart';
-import 'package:myappv2/screen/class_screen/subjectpage.dart';
-import 'package:myappv2/screen/class_screen/work_room.dart';
-// import 'package:myappv2/screen/welcome.dart';
-import 'package:myappv2/screen/welcomev2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:myappv2/screen/class_screen/addstudentv2.dart';
 
-import 'homepage.dart';
+import '../../widgets/class_drawer.dart';
+import 'activity_list.dart';
+
 
 class Object {
   String? id;
-  String? act_name;
-  String? act_detail;
+  String? actName;
+  String? actDetail;
   String? crID;
 
-  Object({this.id, this.act_name, this.act_detail, this.crID});
+  Object({this.id, this.actName, this.actDetail, this.crID});
 
   factory Object.fromJson(Map<String, dynamic> json) {
     return Object(
       id: json['id'],
-      act_name: json['act_name'],
-      act_detail: json['act_detail'],
+      actName: json['act_name'],
+      actDetail: json['act_detail'],
       crID: json['crID'],
     );
   }
@@ -58,8 +40,9 @@ class _ActivityRoomState extends State<ActivityRoom> {
   int? id;
   String? fnamelogin;
   String? lnamelogin;
+
+  @override
   void initState() {
-    print("initState");
     super.initState();
     fetchJSON();
     getCred();
@@ -67,12 +50,10 @@ class _ActivityRoomState extends State<ActivityRoom> {
 
   void _refreshData() {
     setState(() {
-      print("setState");
       fetchJSON();
     });
   }
 
-  @override
   void getCred() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     SharedPreferences pref1 = await SharedPreferences.getInstance();
@@ -96,12 +77,12 @@ class _ActivityRoomState extends State<ActivityRoom> {
       var response = jsonDecode(res.body);
       if (response['status'] == "success") {
         _refreshData();
-        print("yes");
+        // print("yes");
       } else {
-        print("not");
+        // print("not");
       }
     } catch (e) {
-      print("ddd");
+      // print("ddd");
     }
   }
 
@@ -128,12 +109,11 @@ class _ActivityRoomState extends State<ActivityRoom> {
 
   @override
   Widget build(BuildContext context) {
-    print("build"); // สำหรับทดสอบ
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        title: Text(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: const Text(
           'กิจกรรมของชั้นเรียน',
           style: TextStyle(
             color: Colors.black,
@@ -166,14 +146,14 @@ class _ActivityRoomState extends State<ActivityRoom> {
                     child: ListView.builder(
                         shrinkWrap: true,
                         physics: const BouncingScrollPhysics(),
-                        itemCount: items == null ? 0 : items.length,
+                        itemCount: items.isEmpty ? 0 : items.length,
                         itemBuilder: (context, index) {
                           return Column(
                             children: [
                               Card(
                                 child: ListTile(
                                   title: Text(
-                                    items[index].act_name.toString(),
+                                    items[index].actName.toString(),
                                   ),
                                   onTap: () {
                                     Navigator.push(context,
@@ -184,7 +164,7 @@ class _ActivityRoomState extends State<ActivityRoom> {
                                     }));
                                   },
                                   subtitle: Text(
-                                    items[index].act_detail.toString(),
+                                    items[index].actDetail.toString(),
                                   ),
                                   // trailing: IconButton(
                                   //   icon: Icon(Icons.delete),
@@ -194,9 +174,9 @@ class _ActivityRoomState extends State<ActivityRoom> {
                                   // ),
                                   leading: CircleAvatar(
                                     backgroundColor:
-                                        Color.fromARGB(255, 242, 2, 250),
+                                        const Color.fromARGB(255, 242, 2, 250),
                                     child: Text(
-                                        items[index].act_name.toString()[0],
+                                        items[index].actName.toString()[0],
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 22.0,
@@ -223,52 +203,7 @@ class _ActivityRoomState extends State<ActivityRoom> {
         onPressed: _refreshData,
         child: const Icon(Icons.refresh),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text('$fnamelogin $lnamelogin'),
-              accountEmail: Text("ครู"),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"),
-                backgroundColor: Colors.white,
-              ),
-            ),
-            ListTile(
-              title: const Text('หน้าแรก'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ClassHomePageScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเรียน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return GradeScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเข้ากิจกรรม'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานการส่งงาน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return WorkRoom();
-                }));
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer:  ClassDrawer(fname: fnamelogin, lname: lnamelogin),
     );
   }
 }

@@ -1,39 +1,14 @@
 import 'dart:convert';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:myappv2/screen/class_screen/activity_room.dart';
-// import 'package:myappv2/screen/class_screen/ParenWorkScreen.dart';
-import 'package:myappv2/screen/class_screen/addstudentv2.dart';
-import 'package:myappv2/screen/class_screen/classpage.dart';
-import 'package:myappv2/screen/class_screen/create_class_activity.dart';
-import 'package:myappv2/screen/class_screen/create_subject_activity.dart';
-import 'package:myappv2/screen/class_screen/grade_page.dart';
-import 'package:myappv2/screen/class_screen/menu_create.dart';
-import 'package:myappv2/screen/class_screen/student_subject.dart';
-import 'package:myappv2/screen/class_screen/studentclass.dart';
-import 'package:myappv2/screen/class_screen/subject_add_student.dart';
-import 'package:myappv2/screen/class_screen/subjectpage.dart';
-import 'package:myappv2/screen/class_screen/work_room.dart';
-import 'package:myappv2/screen/parens_screen/paren_activity.dart';
-import 'package:myappv2/screen/parens_screen/paren_add_student.dart';
-import 'package:myappv2/screen/parens_screen/paren_grade.dart';
-import 'package:myappv2/screen/parens_screen/paren_home.dart';
-import 'package:myappv2/screen/parens_screen/paren_student_all.dart';
-import 'package:myappv2/screen/parens_screen/paren_work_student.dart';
-import 'package:myappv2/screen/students_screen/student_activity.dart';
-import 'package:myappv2/screen/students_screen/student_grade.dart';
-import 'package:myappv2/screen/students_screen/student_work.dart';
-// import 'package:myappv2/screen/welcome.dart';
-import 'package:myappv2/screen/welcomev2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:myappv2/screen/class_screen/addstudentv2.dart';
+
+import '../../widgets/parent_drawer.dart';
+import 'paren_add_student.dart';
+import 'paren_work_student.dart';
 
 class Object {
   int? id;
@@ -64,8 +39,8 @@ class _ParenWorkScreenState extends State<ParenWorkScreen> {
   String? fname;
   String? lname;
 
+  @override
   void initState() {
-    print("initState");
     super.initState();
     fetchJSON();
     getCred();
@@ -73,12 +48,10 @@ class _ParenWorkScreenState extends State<ParenWorkScreen> {
 
   void _refreshData() {
     setState(() {
-      print("setState");
       fetchJSON();
     });
   }
 
-  @override
   void getCred() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     SharedPreferences pref1 = await SharedPreferences.getInstance();
@@ -101,12 +74,12 @@ class _ParenWorkScreenState extends State<ParenWorkScreen> {
       var response = jsonDecode(res.body);
       if (response['status'] == "success") {
         _refreshData();
-        print("yes");
+        // print("yes");
       } else {
-        print("not");
+        // print("not");
       }
     } catch (e) {
-      print("ddd");
+      // print("ddd");
     }
   }
 
@@ -132,12 +105,11 @@ class _ParenWorkScreenState extends State<ParenWorkScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("build"); // สำหรับทดสอบ
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        title: Text(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: const Text(
           'การส่งงาน',
           style: TextStyle(
             color: Colors.black,
@@ -148,10 +120,10 @@ class _ParenWorkScreenState extends State<ParenWorkScreen> {
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   // return CreateClass();
-                  return ParenAddStudentScreen();
+                  return const ParenAddStudentScreen();
                 }));
               },
-              icon: Icon(Icons.add))
+              icon: const Icon(Icons.add))
         ],
       ),
       body: Padding(
@@ -165,14 +137,14 @@ class _ParenWorkScreenState extends State<ParenWorkScreen> {
               var items = data.data as List<Object>;
               return Column(
                 children: <Widget>[
-                  Column(
+                  const Column(
                     children: [
                       Column(
                         children: [
                           Row(
                             children: [
                               Text("การส่งงานของบุตรหลาน",
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: Color.fromARGB(255, 16, 14, 14),
                                     fontSize: 16.0,
                                   )),
@@ -187,16 +159,14 @@ class _ParenWorkScreenState extends State<ParenWorkScreen> {
                     child: ListView.builder(
                         shrinkWrap: true,
                         physics: const BouncingScrollPhysics(),
-                        itemCount: items == null ? 0 : items.length,
+                        itemCount: items.isEmpty ? 0 : items.length,
                         itemBuilder: (context, index) {
                           return Column(
                             children: [
                               Card(
                                 child: ListTile(
                                   title: Text(
-                                    items[index].fname.toString() +
-                                        '  ' +
-                                        items[index].lname.toString(),
+                                    '${items[index].fname}  ${items[index].lname}',
                                   ),
                                   // onTap: () {
                                   //   getItemAndNavigate(items[index].name.toString(),
@@ -206,7 +176,7 @@ class _ParenWorkScreenState extends State<ParenWorkScreen> {
                                     items[index].email.toString(),
                                   ),
                                   trailing: IconButton(
-                                    icon: Icon(Icons.visibility),
+                                    icon: const Icon(Icons.visibility),
                                     onPressed: () {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) {
@@ -222,7 +192,7 @@ class _ParenWorkScreenState extends State<ParenWorkScreen> {
                                     children: [
                                       CircleAvatar(
                                         backgroundColor:
-                                            Color.fromARGB(255, 242, 2, 250),
+                                            const Color.fromARGB(255, 242, 2, 250),
                                         child: Text(
                                             items[index].fname.toString()[0],
                                             style: const TextStyle(
@@ -253,54 +223,7 @@ class _ParenWorkScreenState extends State<ParenWorkScreen> {
         onPressed: _refreshData,
         child: const Icon(Icons.refresh),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text('$fname $lname'),
-              accountEmail: Text("ผู้ปกครอง"),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"),
-                backgroundColor: Colors.white,
-              ),
-            ),
-            ListTile(
-              title: const Text('หน้าแรก'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ParenHomeScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเรียน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ParenGradeScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('กิจกรรม'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ParenActivityScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('การส่งงาน'),
-              onTap: () {
-                // Navigator.push(context, MaterialPageRoute(builder: (context) {
-                //   return StudentWorkScreen();
-                // }));
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: ParentDrawer(fname: fname, lname: lname),
     );
   }
 }

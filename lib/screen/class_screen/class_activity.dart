@@ -1,41 +1,19 @@
 import 'dart:convert';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:myappv2/screen/class_screen/activity_room.dart';
-// import 'package:myappv2/screen/class_screen/ClassActivity.dart';
-import 'package:myappv2/screen/class_screen/addstudentv2.dart';
-import 'package:myappv2/screen/class_screen/classpage.dart';
-import 'package:myappv2/screen/class_screen/create_class_activity.dart';
-import 'package:myappv2/screen/class_screen/create_subject_activity.dart';
-import 'package:myappv2/screen/class_screen/grade_page.dart';
-import 'package:myappv2/screen/class_screen/menu_create.dart';
-import 'package:myappv2/screen/class_screen/student_subject.dart';
-import 'package:myappv2/screen/class_screen/studentclass.dart';
-import 'package:myappv2/screen/class_screen/subject_add_student.dart';
-import 'package:myappv2/screen/class_screen/subjectpage.dart';
-import 'package:myappv2/screen/class_screen/update_class_activity.dart';
-import 'package:myappv2/screen/class_screen/work_room.dart';
-// import 'package:myappv2/screen/welcome.dart';
-import 'package:myappv2/screen/welcomev2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:myappv2/screen/class_screen/addstudentv2.dart';
 
-import 'homepage.dart';
+import '../../widgets/class_drawer.dart';
+import 'addstudentv2.dart';
+import 'create_class_activity.dart';
+import 'studentclass.dart';
+import 'update_class_activity.dart';
+
 
 class Object {
-  int? id;
-  String? fname;
-  String? lname;
-  String? email;
-  String? status;
-
   Object({this.id, this.fname, this.lname, this.email, this.status});
 
   factory Object.fromJson(Map<String, dynamic> json) {
@@ -46,36 +24,28 @@ class Object {
         email: json['email'],
         status: json['status']);
   }
+
+  String? email;
+  String? fname;
+  int? id;
+  String? lname;
+  String? status;
 }
 
 class ClassActivity extends StatefulWidget {
-  final String? idclass;
   const ClassActivity(this.idclass, {super.key});
+
+  final String? idclass;
 
   @override
   State<ClassActivity> createState() => _ClassActivityState();
 }
 
 class _ClassActivityState extends State<ClassActivity> {
-  int? id;
   String? fnamelogin;
+  int? id;
   String? lnamelogin;
 
-  void initState() {
-    print("initState");
-    super.initState();
-    fetchJSON();
-    getCred();
-  }
-
-  void _refreshData() {
-    setState(() {
-      print("setState");
-      fetchJSON();
-    });
-  }
-
-  @override
   void getCred() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     SharedPreferences pref1 = await SharedPreferences.getInstance();
@@ -87,6 +57,13 @@ class _ClassActivityState extends State<ClassActivity> {
       fnamelogin = pref1.getString("fname")!;
       lnamelogin = pref2.getString("lname")!;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchJSON();
+    getCred();
   }
 
   Future<void> delrecord(String id, String status) async {
@@ -136,9 +113,14 @@ class _ClassActivityState extends State<ClassActivity> {
     }
   }
 
+  void _refreshData() {
+    setState(() {
+      fetchJSON();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("build"); // สำหรับทดสอบ
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.black),
@@ -178,12 +160,12 @@ class _ClassActivityState extends State<ClassActivity> {
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
                           onPressed: () {},
-                          child: const Text('กิจกรรม'),
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
+                          child: const Text('กิจกรรม'),
                         ),
                       ),
                       Padding(
@@ -196,12 +178,12 @@ class _ClassActivityState extends State<ClassActivity> {
                               return StudentClass(widget.idclass);
                             }));
                           },
-                          child: const Text('นักเรียน'),
                           style: OutlinedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
+                          child: const Text('นักเรียน'),
                         ),
                       ),
                       Padding(
@@ -214,12 +196,12 @@ class _ClassActivityState extends State<ClassActivity> {
                               return AddStudent(widget.idclass);
                             }));
                           },
-                          child: const Text('+ เพิ่มนักเรียน'),
                           style: OutlinedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
+                          child: const Text('+ เพิ่มนักเรียน'),
                         ),
                       ),
                     ],
@@ -242,12 +224,12 @@ class _ClassActivityState extends State<ClassActivity> {
                               return CreateClassActivity(widget.idclass);
                             }));
                           },
-                          child: const Text('+ สร้าง'),
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
+                          child: const Text('+ สร้าง'),
                         ),
                       ),
                     ],
@@ -257,7 +239,7 @@ class _ClassActivityState extends State<ClassActivity> {
                     child: ListView.builder(
                         shrinkWrap: true,
                         physics: const BouncingScrollPhysics(),
-                        itemCount: items == null ? 0 : items.length,
+                        itemCount: items.isEmpty ? 0 : items.length,
                         itemBuilder: (context, index) {
                           return Column(
                             children: [
@@ -334,10 +316,10 @@ class _ClassActivityState extends State<ClassActivity> {
                                                             .toString());
                                                   }));
                                                 },
-                                                child: Row(
+                                                child: const Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
-                                                  children: const [
+                                                  children: [
                                                     Padding(
                                                       padding:
                                                           EdgeInsets.all(0),
@@ -362,10 +344,10 @@ class _ClassActivityState extends State<ClassActivity> {
                                                       .id
                                                       .toString());
                                                 },
-                                                child: Row(
+                                                child: const Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
-                                                  children: const [
+                                                  children: [
                                                     Padding(
                                                       padding:
                                                           EdgeInsets.all(0),
@@ -404,54 +386,7 @@ class _ClassActivityState extends State<ClassActivity> {
         onPressed: _refreshData,
         child: const Icon(Icons.refresh),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text('$fnamelogin $lnamelogin'),
-              accountEmail: const Text("ครู"),
-              currentAccountPicture: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"),
-                backgroundColor: Colors.white,
-              ),
-            ),
-            ListTile(
-              title: const Text('หน้าแรก'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const ClassHomePageScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเรียน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const GradeScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเข้ากิจกรรม'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const ActivityRoom();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานการส่งงาน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const WorkRoom();
-                }));
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer:  ClassDrawer(fname: fnamelogin, lname: lnamelogin),
     );
   }
 }

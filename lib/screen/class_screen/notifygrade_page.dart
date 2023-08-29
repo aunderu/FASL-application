@@ -1,27 +1,13 @@
 import 'dart:convert';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:myappv2/screen/class_screen/addstudent.dart';
-import 'package:myappv2/screen/class_screen/classpage.dart';
-import 'package:myappv2/screen/class_screen/grade_page.dart';
-import 'package:myappv2/screen/class_screen/grade_student.dart';
-import 'package:myappv2/screen/class_screen/menu_create.dart';
-import 'package:myappv2/screen/class_screen/subjectpage.dart';
-import 'package:myappv2/screen/class_screen/work_room.dart';
-// import 'package:myappv2/screen/welcome.dart';
-import 'package:myappv2/screen/welcomev2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../widgets/class_drawer.dart';
 import 'grade_student.dart';
-import 'homepage.dart';
 
 class Object {
   int? id;
@@ -54,7 +40,7 @@ class _NotifyGradeState extends State<NotifyGrade> {
   int? id;
   String? fname;
   String? lname;
-  @override
+
   void getCred() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     SharedPreferences pref1 = await SharedPreferences.getInstance();
@@ -87,7 +73,7 @@ class _NotifyGradeState extends State<NotifyGrade> {
     }
   }
 
-  // ignore: annotate_overrides
+  @override
   void initState() {
     super.initState();
     fetchJSON();
@@ -95,22 +81,19 @@ class _NotifyGradeState extends State<NotifyGrade> {
     getCred();
   }
 
-  // ignore: unused_element
   void _refreshData() {
     setState(() {
-      print("setState");
       fetchJSON();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    print("build"); // สำหรับทดสอบ
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        title: Text(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: const Text(
           'ผลการเรียน',
           style: TextStyle(
             color: Colors.black,
@@ -135,14 +118,12 @@ class _NotifyGradeState extends State<NotifyGrade> {
           } else if (data.hasData) {
             var items = data.data as List<Object>;
             return ListView.builder(
-                itemCount: items == null ? 0 : items.length,
+                itemCount: items.isEmpty ? 0 : items.length,
                 itemBuilder: (context, index) {
                   return Card(
                       child: ListTile(
                     title: Text(
-                      items[index].fname.toString() +
-                          '  ' +
-                          items[index].lname.toString(),
+                      '${items[index].fname}  ${items[index].lname}',
                     ),
                     onTap: () {
                       Navigator.push(context,
@@ -170,7 +151,7 @@ class _NotifyGradeState extends State<NotifyGrade> {
                       },
                     ),
                     leading: CircleAvatar(
-                      backgroundColor: Color.fromARGB(255, 242, 2, 250),
+                      backgroundColor: const Color.fromARGB(255, 242, 2, 250),
                       child: Text(items[index].fname.toString()[0],
                           style: const TextStyle(
                             color: Colors.white,
@@ -186,52 +167,7 @@ class _NotifyGradeState extends State<NotifyGrade> {
           }
         },
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text('$fname $lname'),
-              accountEmail: Text("ครู"),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"),
-                backgroundColor: Colors.white,
-              ),
-            ),
-            ListTile(
-              title: const Text('หน้าแรก'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ClassHomePageScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเรียน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return GradeScreen();
-                }));
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานผลการเข้ากิจกรรม'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text('รายงานการส่งงาน'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return WorkRoom();
-                }));
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer:  ClassDrawer(fname: fname, lname: lname),
       floatingActionButton: FloatingActionButton(
         // ปุ่มทดสอบสำหรับดึงข้อมูลซ้ำ
         onPressed: _refreshData,

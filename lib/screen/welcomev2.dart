@@ -1,18 +1,9 @@
-// import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:ffi';
 
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:http/http.dart';
-import 'package:myappv2/screen/class_screen/classpage.dart';
-import 'package:myappv2/screen/class_screen/grade_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:myappv2/loginv2.dart';
 
-import 'class_screen/homepage.dart';
+import 'class_screen/classpage.dart';
+import 'class_screen/grade_page.dart';
 
 class WelcomScreen extends StatefulWidget {
   const WelcomScreen({super.key});
@@ -23,7 +14,7 @@ class WelcomScreen extends StatefulWidget {
 
 class _WelcomScreenState extends State<WelcomScreen> {
   // late Future<int> id;
-  int id = 0;
+  int? id;
   @override
   void initState() {
     super.initState();
@@ -33,13 +24,13 @@ class _WelcomScreenState extends State<WelcomScreen> {
   void getCred() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     // final int id = pref.getInt('id')!;
-    final int id = pref.getInt("id")!;
+    id = pref.getInt("id")!;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("หน้าแรก")),
+      appBar: AppBar(title: const Text("หน้าแรก")),
       body: const Center(
         child: Text('My Page!'),
       ),
@@ -48,9 +39,9 @@ class _WelcomScreenState extends State<WelcomScreen> {
           padding: EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text('Rusdee Lanong'),
-              accountEmail: Text("${id}"),
-              currentAccountPicture: CircleAvatar(
+              accountName: const Text('Rusdee Lanong'),
+              accountEmail: Text("${id ?? 0}"),
+              currentAccountPicture: const CircleAvatar(
                 backgroundImage: NetworkImage(
                     "https://cdn-icons-png.flaticon.com/512/149/149071.png"),
                 backgroundColor: Colors.white,
@@ -66,7 +57,7 @@ class _WelcomScreenState extends State<WelcomScreen> {
               title: const Text('ชั้นเรียน'),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ClassHomePageScreen();
+                  return const ClassHomePageScreen();
                 }));
               },
             ),
@@ -74,7 +65,7 @@ class _WelcomScreenState extends State<WelcomScreen> {
               title: const Text('รายงานผลการเรียน'),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return GradeScreen();
+                  return const GradeScreen();
                 }));
               },
             ),
